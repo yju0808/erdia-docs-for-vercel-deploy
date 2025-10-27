@@ -1,0 +1,85 @@
+---
+title: 시작하기
+description: Erdia를 시작하는 방법
+---
+
+# 시작하기
+
+Erdia를 사용하여 첫 번째 ERD를 만들어보세요. 몇 분이면 충분합니다!
+
+## 1단계: 회원가입 / 로그인
+
+1. [Erdia 홈페이지](https://www.erdia.app)에 접속합니다
+2. 우측 상단의 **"무료로 시작하기"** 버튼을 클릭합니다
+3. Google 계정으로 간편하게 로그인합니다
+
+<Callout type="info">
+**팁**: 별도의 회원가입 절차 없이 Google OAuth로 즉시 시작할 수 있습니다
+</Callout>
+
+## 2단계: 새 프로젝트 만들기
+
+1. 대시보드에서 **"새 프로젝트"** 버튼을 클릭합니다
+2. 프로젝트 이름을 입력합니다 (예: "쇼핑몰 데이터베이스")
+3. (선택) 프로젝트 설명을 입력합니다
+4. **"생성"** 버튼을 클릭합니다
+
+## 3단계: AI 채팅으로 ERD 생성하기
+
+1. 화면 하단의 **채팅 입력창**에 원하는 데이터베이스 구조를 설명합니다
+
+예시:
+```
+쇼핑몰 ERD 만들어줘.
+- User 테이블: id, email, password, name
+- Product 테이블: id, name, price, stock
+- Order 테이블: id, user_id, total_amount, order_date
+User는 여러 Order를 가질 수 있어.
+```
+
+2. AI 어시스턴트가 구조를 분석하여 ERD를 자동으로 생성합니다
+3. 생성된 ERD가 캔버스에 표시됩니다
+
+<Callout type="success">
+**성공!** 이제 첫 번째 ERD가 생성되었습니다. 캔버스에서 자유롭게 수정할 수 있습니다.
+</Callout>
+
+## 4단계: 캔버스에서 편집하기
+
+1. **엔티티 노드 클릭**: 테이블 이름과 컬럼을 직접 수정합니다
+2. **관계 연결**: 한 엔티티의 속성을 드래그하여 다른 엔티티의 속성에 연결합니다
+3. **자동 정렬**: 툴바에서 "자동 정렬" 버튼을 클릭하여 다이어그램을 깔끔하게 배치합니다
+
+## 5단계: SQL 내보내기
+
+1. 툴바에서 **"내보내기"** 버튼을 클릭합니다
+2. 원하는 데이터베이스 엔진을 선택합니다 (MySQL 또는 PostgreSQL)
+3. 옵션을 설정합니다:
+   - Timestamp 필드 포함 여부
+   - Foreign Key 제약조건 포함 여부
+   - 스키마 이름
+4. **"SQL 다운로드"** 버튼을 클릭하여 `.sql` 파일을 받습니다
+
+## 6단계: 데이터베이스에 적용하기
+
+다운로드한 SQL 파일을 데이터베이스에 적용합니다:
+
+**MySQL:**
+```bash
+mysql -u username -p database_name < schema.sql
+```
+
+**PostgreSQL:**
+```bash
+psql -U username -d database_name -f schema.sql
+```
+
+<Callout type="success">
+축하합니다! 🎉 Erdia로 첫 번째 데이터베이스를 성공적으로 설계하고 배포했습니다.
+</Callout>
+
+## 다음 단계
+
+- [주요 기능](/docs/features) - Erdia의 핵심 기능들을 자세히 알아보세요
+- [AI 채팅 가이드](/docs/guides/ai-chat) - AI 어시스턴트를 효과적으로 사용하는 방법
+- [캔버스 편집 가이드](/docs/guides/canvas) - 인터랙티브 캔버스 사용법

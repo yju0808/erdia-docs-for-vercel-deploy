@@ -1,0 +1,257 @@
+---
+title: AI로 쇼핑몰 ERD 5분 만에 만들기
+description: Erdia AI 채팅으로 복잡한 데이터베이스를 빠르게 설계하는 방법
+---
+
+# AI로 쇼핑몰 ERD 5분 만에 만들기
+
+"쇼핑몰 데이터베이스 설계하는데 며칠이 걸렸어요..." 😰
+
+이제 Erdia AI와 함께라면 **5분**이면 충분합니다!
+
+## 🎯 목표
+
+이번 튜토리얼에서는 다음 기능을 가진 쇼핑몰 ERD를 만들어봅니다:
+
+- ✅ 회원 가입 및 로그인
+- ✅ 상품 카탈로그
+- ✅ 장바구니
+- ✅ 주문 및 결제
+- ✅ 배송 추적
+- ✅ 리뷰 시스템
+
+## 1단계: 핵심 엔티티 생성 (1분)
+
+먼저 AI에게 기본 구조를 요청합니다.
+
+```
+💬 "쇼핑몰 ERD 만들어줘.
+필요한 테이블:
+- User: 회원 정보
+- Product: 상품 정보
+- Category: 상품 카테고리
+- Cart: 장바구니
+- Order: 주문
+- OrderItem: 주문 상품 상세"
+```
+
+**AI가 자동으로 생성:**
+- 6개 테이블과 기본 컬럼
+- Primary Key 설정
+- 기본 관계 연결
+
+<Callout type="success">
+**결과**: 핵심 테이블 6개가 캔버스에 생성됩니다!
+</Callout>
+
+---
+
+## 2단계: 상세 컬럼 추가 (2분)
+
+이제 각 테이블에 필요한 컬럼을 추가합니다.
+
+### User 테이블
+
+```
+💬 "User 테이블에 다음 컬럼 추가:
+- phone: VARCHAR(20)
+- address: TEXT
+- postal_code: VARCHAR(10)
+- email은 unique로 설정"
+```
+
+### Product 테이블
+
+```
+💬 "Product 테이블에:
+- category_id: INT (Category 테이블 참조)
+- price: DECIMAL(10,2)
+- stock: INT
+- description: TEXT
+- image_url: VARCHAR(255)
+- is_active: BOOLEAN"
+```
+
+### Order 테이블
+
+```
+💬 "Order 테이블에:
+- user_id: INT (User 참조)
+- total_amount: DECIMAL(10,2)
+- status: ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled')
+- shipping_address: TEXT
+- payment_method: VARCHAR(50)"
+```
+
+---
+
+## 3단계: 고급 기능 추가 (1분)
+
+### 리뷰 시스템
+
+```
+💬 "Review 테이블 추가:
+- product_id: INT
+- user_id: INT
+- rating: INT (1-5)
+- comment: TEXT
+- created_at: TIMESTAMP
+
+Product와 User의 1:N 관계로 연결해줘"
+```
+
+### 장바구니 개선
+
+```
+💬 "Cart는 CartItem으로 변경하고:
+- user_id: INT
+- product_id: INT
+- quantity: INT
+- added_at: TIMESTAMP
+
+User와 Product의 중간 테이블로 만들어줘"
+```
+
+---
+
+## 4단계: 관계 최적화 (1분)
+
+### 카테고리 계층 구조
+
+```
+💬 "Category에 parent_id 추가해서 계층 구조 만들어줘.
+예: 전자제품 > 노트북 > 게이밍 노트북"
+```
+
+**AI가 생성:**
+```sql
+CREATE TABLE Category (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  parent_id INT,
+  FOREIGN KEY (parent_id) REFERENCES Category(id)
+);
+```
+
+---
+
+## 5단계: 최종 검토 및 내보내기 (1분)
+
+### AI에게 검토 요청
+
+```
+💬 "현재 ERD에 빠진 게 있거나 개선할 점 있어?"
+```
+
+**AI 제안:**
+- ✅ "User 테이블에 email_verified BOOLEAN 추가하면 어떨까요?"
+- ✅ "Product에 view_count 추가하면 인기 상품 파악에 좋습니다"
+- ✅ "Order에 discount_amount 추가하세요"
+
+### 자동 정렬
+
+캔버스 툴바에서 "자동 정렬" 클릭
+
+### SQL 내보내기
+
+1. "내보내기" 버튼
+2. MySQL 선택
+3. 스키마 이름: shopping_mall
+4. SQL 다운로드
+
+---
+
+## 완성된 ERD 구조
+
+```
+User (회원)
+├── Cart (장바구니)
+├── Order (주문)
+│   └── OrderItem (주문상품)
+├── Review (리뷰)
+
+Product (상품)
+├── Category (카테고리)
+├── Cart
+├── OrderItem
+└── Review
+```
+
+**총 테이블 수**: 7개  
+**총 관계 수**: 10개  
+**소요 시간**: 5분
+
+---
+
+## 💡 효율적인 AI 활용 팁
+
+### 1. 단계별로 요청하기
+
+❌ 나쁜 예:
+```
+"쇼핑몰 ERD 전체 다 만들어줘"
+```
+
+✅ 좋은 예:
+```
+1. "핵심 테이블 먼저 만들어줘"
+2. "User 테이블 상세 컬럼 추가"
+3. "리뷰 시스템 추가"
+```
+
+### 2. 구체적으로 명시하기
+
+❌ 모호한 요청:
+```
+"결제 기능 추가해줘"
+```
+
+✅ 구체적인 요청:
+```
+"Payment 테이블 추가:
+- order_id: INT
+- amount: DECIMAL(10,2)
+- method: ENUM('card', 'bank', 'kakao')
+- status: ENUM('pending', 'completed', 'failed')
+- paid_at: TIMESTAMP"
+```
+
+### 3. 관계 명확히 하기
+
+```
+"User와 Product의 N:M 관계로 Wishlist 만들어줘"
+→ AI가 자동으로 중간 테이블 생성
+```
+
+---
+
+## 다음 단계
+
+ERD를 데이터베이스에 적용해봅시다!
+
+```bash
+# MySQL 데이터베이스 생성
+mysql -u root -p
+
+mysql> CREATE DATABASE shopping_mall;
+mysql> USE shopping_mall;
+
+# SQL 파일 실행
+mysql> source schema.sql;
+
+# 테이블 확인
+mysql> SHOW TABLES;
+```
+
+---
+
+## 마무리
+
+**5분 만에 완성한 것:**
+- ✅ 7개 테이블
+- ✅ 10개 관계
+- ✅ 프로덕션 레디 SQL
+
+Erdia AI와 함께라면 복잡한 ERD도 **빠르고 정확하게** 만들 수 있습니다!
+
+질문이나 피드백은 hello@erdia.app로 보내주세요!
