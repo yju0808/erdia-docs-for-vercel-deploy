@@ -1,0 +1,222 @@
+---
+title: ERD 설계 5가지 베스트 프랙티스
+description: 효율적인 데이터베이스 설계를 위한 실전 팁
+---
+
+# ERD 설계 5가지 베스트 프랙티스
+
+데이터베이스 설계, 어렵게 생각하시나요? 🤔
+
+이 글에서는 ERD 설계 시 꼭 알아야 할 5가지 베스트 프랙티스를 소개합니다.
+
+## 1. 명명 규칙을 일관되게 유지하세요
+
+**나쁜 예:**
+```
+user, PRODUCT, Order_item, blogPost
+```
+
+**좋은 예:**
+```
+User, Product, OrderItem, BlogPost  (테이블명: PascalCase)
+user_id, created_at, is_active     (컬럼명: snake_case)
+```
+
+### 권장 명명 규칙
+
+| 대상 | 규칙 | 예시 |
+|------|------|------|
+| 테이블 | PascalCase, 단수형 | User, OrderItem |
+| 컬럼 | snake_case | user_id, created_at |
+| Primary Key | id | id (각 테이블) |
+| Foreign Key | 테이블명_id | user_id, product_id |
+
+<Callout type="success">
+**팁**: Erdia AI에게 "명명 규칙 확인해줘"라고 요청하면 자동으로 검사해줍니다!
+</Callout>
+
+---
+
+## 2. 정규화를 적절히 활용하세요
+
+### 제1정규형 (1NF): 원자값 보장
+
+**나쁜 예:**
+```sql
+CREATE TABLE User (
+  id INT PRIMARY KEY,
+  phone_numbers VARCHAR(255)  -- "010-1234-5678, 010-9876-5432"
+);
+```
+
+**좋은 예:**
+```sql
+CREATE TABLE User (
+  id INT PRIMARY KEY
+);
+
+CREATE TABLE UserPhone (
+  id INT PRIMARY KEY,
+  user_id INT,
+  phone_number VARCHAR(20),
+  FOREIGN KEY (user_id) REFERENCES User(id)
+);
+```
+
+### 제3정규형 (3NF): 이행적 종속 제거
+
+**나쁜 예:**
+```sql
+CREATE TABLE Order (
+  id INT PRIMARY KEY,
+  user_id INT,
+  user_name VARCHAR(100),  -- user_id로 유추 가능
+  user_email VARCHAR(255)  -- user_id로 유추 가능
+);
+```
+
+**좋은 예:**
+```sql
+CREATE TABLE Order (
+  id INT PRIMARY KEY,
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES User(id)
+);
+-- user_name, user_email은 User 테이블에서 조회
+```
+
+<Callout type="warning">
+**주의**: 과도한 정규화는 조인이 많아져 성능 저하를 일으킬 수 있습니다. 상황에 맞게 반정규화를 고려하세요.
+</Callout>
+
+---
+
+## 3. 관계 타입을 명확히 정의하세요
+
+### 1:1 관계
+
+사용자와 프로필처럼 **필수가 아닌** 정보를 분리할 때 사용합니다.
+
+```sql
+CREATE TABLE User (
+  id INT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE UserProfile (
+  id INT PRIMARY KEY,
+  user_id INT UNIQUE,  -- UNIQUE로 1:1 보장
+  bio TEXT,
+  avatar_url VARCHAR(255),
+  FOREIGN KEY (user_id) REFERENCES User(id)
+);
+```
+
+### 1:N 관계
+
+가장 일반적인 관계입니다.
+
+```sql
+-- 한 사용자가 여러 게시글 작성
+CREATE TABLE User (
+  id INT PRIMARY KEY
+);
+
+CREATE TABLE Post (
+  id INT PRIMARY KEY,
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES User(id)
+);
+```
+
+### N:M 관계
+
+중간 테이블을 **반드시** 사용하세요.
+
+```sql
+-- 게시글과 태그의 다대다 관계
+CREATE TABLE Post (
+  id INT PRIMARY KEY
+);
+
+CREATE TABLE Tag (
+  id INT PRIMARY KEY,
+  name VARCHAR(50) UNIQUE
+);
+
+-- 중간 테이블
+CREATE TABLE PostTag (
+  post_id INT,
+  tag_id INT,
+  PRIMARY KEY (post_id, tag_id),
+  FOREIGN KEY (post_id) REFERENCES Post(id),
+  FOREIGN KEY (tag_id) REFERENCES Tag(id)
+);
+```
+
+---
+
+## 4. 인덱스 전략을 세우세요
+
+### 인덱스를 추가해야 하는 경우
+
+- ✅ Primary Key (자동 생성)
+- ✅ Foreign Key
+- ✅ 자주 검색하는 컬럼
+- ✅ WHERE, JOIN, ORDER BY에 사용되는 컬럼
+
+**예시:**
+```sql
+CREATE TABLE User (
+  id INT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,  -- 인덱스 추가
+  created_at TIMESTAMP,
+  INDEX idx_created_at (created_at)  -- 날짜 검색용
+);
+```
+
+<Callout type="info">
+**인덱스 = 성능 향상 vs 저장 공간 증가**
+
+인덱스는 검색 속도를 높이지만 저장 공간을 차지하고 INSERT/UPDATE 속도를 느리게 만듭니다.
+</Callout>
+
+---
+
+## 5. Timestamp 필드를 습관화하세요
+
+**모든 테이블**에 다음 필드를 추가하세요:
+
+```sql
+CREATE TABLE User (
+  id INT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**왜 필요한가요?**
+- 📊 데이터 분석: 언제 생성/수정되었는지 추적
+- 🐛 디버깅: 문제 발생 시점 파악
+- 📈 통계: 사용자 가입 추이 분석
+- 🔍 감사: 데이터 변경 이력 추적
+
+<Callout type="success">
+**Erdia 팁**: 내보내기 옵션에서 "Timestamp 필드 포함"을 체크하면 자동으로 추가됩니다!
+</Callout>
+
+---
+
+## 마무리
+
+좋은 ERD 설계는 좋은 애플리케이션의 시작입니다! 🚀
+
+이 5가지 원칙을 기억하세요:
+1. ✅ 일관된 명명 규칙
+2. ✅ 적절한 정규화
+3. ✅ 명확한 관계 정의
+4. ✅ 전략적 인덱스
+5. ✅ Timestamp 필드
+
+궁금한 점이 있으신가요? hello@erdia.app로 질문 보내주세요!
