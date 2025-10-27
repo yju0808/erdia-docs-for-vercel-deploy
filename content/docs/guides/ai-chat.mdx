@@ -1,0 +1,265 @@
+---
+title: AI 채팅 사용법
+description: AI 어시스턴트로 ERD를 생성하고 수정하는 방법
+---
+
+# AI 채팅 사용법
+
+Erdia의 AI 어시스턴트와 대화하여 ERD를 쉽고 빠르게 만들어보세요.
+
+## 기본 사용법
+
+### 새 ERD 생성하기
+
+AI에게 자연어로 데이터베이스 구조를 설명하면 자동으로 ERD가 생성됩니다.
+
+**예시:**
+```
+💬 "블로그 ERD 만들어줘. User, Post, Comment 테이블이 필요해"
+```
+
+**AI가 자동으로 생성하는 것:**
+- User 테이블의 기본 컬럼 (`id`, `email`, `password` 등)
+- Post 테이블과 User의 1:N 관계
+- Comment 테이블과 Post, User의 관계
+
+<Callout type="success">
+AI는 일반적인 데이터베이스 패턴을 이해하고 적절한 컬럼과 관계를 자동으로 설정합니다.
+</Callout>
+
+### 기존 ERD 수정하기
+
+이미 생성된 ERD에 변경사항을 요청할 수 있습니다.
+
+**예시:**
+```
+💬 "User 테이블에 profile_image 컬럼 추가해줘"
+```
+
+**AI가 수행하는 작업:**
+1. 현재 ERD 구조 분석
+2. User 테이블에 `profile_image VARCHAR(255)` 컬럼 추가
+3. 변경된 ERD를 캔버스에 반영
+
+### 관계 추가하기
+
+엔티티 간의 관계를 자연어로 설명할 수 있습니다.
+
+**예시:**
+```
+💬 "Post와 Tag의 다대다 관계 만들어줘"
+```
+
+**AI가 생성하는 것:**
+- `PostTag` 중간 테이블 (`post_id`, `tag_id`)
+- Post와 PostTag의 1:N 관계
+- Tag와 PostTag의 1:N 관계
+
+## 고급 사용법
+
+### 복잡한 제약조건 설정
+
+데이터 검증 규칙을 AI에게 요청할 수 있습니다.
+
+**예시:**
+```
+💬 "Order 테이블의 status는 'pending', 'completed', 'cancelled' 중 하나만 가능하게 해줘"
+```
+
+**AI가 제안하는 것:**
+- `status` 컬럼에 ENUM 타입 적용 (MySQL)
+- CHECK 제약조건 적용 (PostgreSQL)
+
+### 인덱스 최적화 요청
+
+성능 최적화를 위한 인덱스를 추가할 수 있습니다.
+
+**예시:**
+```
+💬 "User 테이블의 email 컬럼에 unique 인덱스 추가해줘"
+```
+
+**AI가 생성하는 것:**
+- `email` 컬럼에 UNIQUE 제약조건 추가
+- 인덱스 생성 SQL 문 포함
+
+### 구체적인 데이터 타입 지정
+
+특정 데이터 타입을 명시할 수 있습니다.
+
+**예시:**
+```
+💬 "Product 테이블의 price는 DECIMAL(10,2) 타입으로 만들어줘"
+```
+
+## 효과적인 질문 방법
+
+### ✅ 좋은 질문 예시
+
+**구체적으로 설명하기:**
+```
+💬 "User 테이블에 다음 컬럼을 추가해줘:
+- profile_image: VARCHAR(255), nullable
+- birth_date: DATE
+- is_active: BOOLEAN, default true"
+```
+
+**관계 명확히 하기:**
+```
+💬 "User가 여러 Post를 가질 수 있고, 각 Post는 하나의 User에게만 속해"
+```
+
+**제약조건 명시하기:**
+```
+💬 "email은 unique하고 필수, password는 최소 8자 이상"
+```
+
+### ❌ 피해야 할 질문
+
+**너무 모호한 요청:**
+```
+💬 "뭔가 만들어줘"  ❌
+```
+
+**한 번에 너무 많은 요청:**
+```
+💬 "User, Post, Comment, Tag, Category, Like, Follow, Message, Notification, Setting... (10개 테이블) 만들어줘"  ❌
+```
+→ 3~5개 테이블씩 나누어 요청하세요
+
+**비정형 데이터 요청:**
+```
+💬 "오늘 날씨 어때?"  ❌
+```
+→ ERD와 관련된 요청만 가능합니다
+
+## 실전 예시
+
+### 쇼핑몰 ERD 만들기
+
+**1단계: 기본 구조 생성**
+```
+💬 "쇼핑몰 ERD 만들어줘.
+- User: 고객 정보
+- Product: 상품 정보
+- Order: 주문 정보
+- OrderItem: 주문 상품 상세"
+```
+
+**2단계: 상세 컬럼 추가**
+```
+💬 "User 테이블에 다음 컬럼 추가:
+- phone: VARCHAR(20)
+- address: TEXT
+- postal_code: VARCHAR(10)"
+```
+
+**3단계: 관계 설정**
+```
+💬 "User가 여러 Order를 가질 수 있고,
+Order는 여러 OrderItem을 가질 수 있고,
+각 OrderItem은 하나의 Product를 참조해"
+```
+
+**4단계: 제약조건 추가**
+```
+💬 "Order 테이블의 status는 'pending', 'paid', 'shipped', 'delivered' 중 하나만 가능하게 해줘"
+```
+
+### 블로그 ERD 만들기
+
+**전체 구조를 한 번에 요청:**
+```
+💬 "블로그 ERD 만들어줘.
+
+테이블:
+- User: id, email, password, nickname, created_at
+- Post: id, user_id, title, content, published_at
+- Comment: id, post_id, user_id, content, created_at
+- Tag: id, name
+- PostTag: post_id, tag_id (다대다 중간 테이블)
+
+관계:
+- User가 여러 Post 작성
+- User가 여러 Comment 작성
+- Post가 여러 Comment 보유
+- Post와 Tag는 다대다 관계"
+```
+
+<Callout type="success">
+상세하게 요청할수록 AI가 더 정확한 ERD를 생성합니다!
+</Callout>
+
+## 유용한 팁 💡
+
+### 1. 단계별로 진행하기
+
+복잡한 ERD는 한 번에 만들지 말고 단계적으로 추가하세요.
+
+1. 핵심 테이블 먼저 생성
+2. 상세 컬럼 추가
+3. 관계 설정
+4. 제약조건 추가
+
+### 2. 현재 상태 확인하기
+
+AI에게 현재 ERD 상태를 물어볼 수 있습니다.
+
+```
+💬 "현재 ERD에 어떤 테이블이 있어?"
+💬 "User 테이블의 컬럼 목록 알려줘"
+```
+
+### 3. 수정 요청 시 구체적으로
+
+```
+✅ "User 테이블의 email 컬럼을 VARCHAR(255)에서 VARCHAR(100)으로 변경해줘"
+❌ "email 컬럼 수정해줘"
+```
+
+### 4. 여러 옵션 제시받기
+
+```
+💬 "User와 Profile의 관계를 어떻게 설정하는 게 좋을까?"
+```
+
+AI가 1:1, 1:N 등 여러 옵션을 제시하고 설명해줍니다.
+
+## 사용 제한
+
+### Free 플랜
+- **하루 50회**까지 AI 채팅 사용 가능
+- 자정(00:00 KST)에 초기화됩니다
+
+### 남은 횟수 확인
+채팅 입력창 우측에서 남은 사용 횟수를 확인할 수 있습니다.
+
+<Callout type="warning">
+사용 횟수를 모두 소진한 경우 캔버스에서 수동으로 편집할 수 있습니다.
+</Callout>
+
+## 문제 해결
+
+### AI가 응답하지 않아요
+
+1. 페이지 새로고침 (F5)
+2. 하루 사용 횟수 확인
+3. 요청이 너무 복잡하지 않은지 확인
+
+### AI가 잘못 이해했어요
+
+구체적으로 수정 요청하세요:
+```
+💬 "아니야, User와 Post는 1:N 관계가 아니라 N:M 관계야"
+```
+
+### 원하는 결과가 나오지 않아요
+
+1. 더 구체적으로 설명하기
+2. 단계를 나누어 요청하기
+3. 캔버스에서 직접 수정하기
+
+## 다음 단계
+
+- [캔버스 편집 가이드](/docs/guides/canvas) - AI가 생성한 ERD를 직접 수정하기
+- [내보내기 가이드](/docs/guides/export) - 완성된 ERD를 SQL로 변환하기
