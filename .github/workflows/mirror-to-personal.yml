@@ -1,0 +1,44 @@
+name: Mirror to Personal Repository
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout organization repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Clear git credentials
+        run: |
+          git config --global --unset-all credential.helper || true
+          git config --system --unset-all credential.helper || true
+          git config --local --unset-all credential.helper || true
+
+      - name: Mirror to personal repository
+        env:
+          PERSONAL_REPO_TOKEN: ${{ secrets.PERSONAL_REPO_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git rm -rf .github
+          git commit -m "Remove .github folder for personal deployment"
+
+          git push "https://oauth2:${PERSONAL_REPO_TOKEN}@github.com/yju0808/erdia-docs-for-vercel-deploy.git" \
+            ${{ github.ref_name }}:${{ github.ref_name }} --force
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ Successfully mirrored to personal repository"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
