@@ -3,14 +3,16 @@
   "pages": [
     "index",
     "getting-started",
-    "---기능---",
+    "---핵심 기능---",
     "features/overview",
     "features/project-management",
     "features/diagram-editor",
     "features/ai-assistant",
     "features/import-export",
+    "---운영 정보---",
     "pricing",
     "limits",
+    "---지원 센터---",
     "troubleshooting",
     "faq"
   ]
