@@ -14,14 +14,20 @@ const pretendardPath = join(
 );
 
 const fontDataPromise: Promise<ArrayBuffer> = (async () => {
-  const pretendardBuffer = await readFile(pretendardPath);
-  const pretendardView = new Uint8Array(
-    pretendardBuffer.buffer.slice(
-      pretendardBuffer.byteOffset,
-      pretendardBuffer.byteOffset + pretendardBuffer.byteLength,
-    ),
-  );
-  return pretendardView.buffer as ArrayBuffer;
+  try {
+    const pretendardBuffer = await readFile(pretendardPath);
+    const pretendardView = new Uint8Array(
+      pretendardBuffer.buffer.slice(
+        pretendardBuffer.byteOffset,
+        pretendardBuffer.byteOffset + pretendardBuffer.byteLength,
+      ),
+    );
+    return pretendardView.buffer as ArrayBuffer;
+  } catch (error) {
+    console.warn('Failed to load Pretendard font, OG images will use system fonts:', error);
+    // Return empty buffer - ImageResponse will fall back to system fonts
+    return new ArrayBuffer(0);
+  }
 })();
 
 type OgImageProps = {
@@ -105,33 +111,54 @@ export async function GET(
   _req: Request,
   { params }: RouteContext<'/og/docs/[...slug]'>,
 ) {
-  const { slug } = await params;
-  const page = source.getPage(slug.slice(0, -1));
-  if (!page) notFound();
+  try {
+    const { slug } = await params;
+    const page = source.getPage(slug.slice(0, -1));
+    if (!page) notFound();
 
-  const fontData = await fontDataPromise;
+    const fontData = await fontDataPromise;
 
-  return new ImageResponse(
-    (
-      <OgImage
-        title={page.data.title}
-        description={page.data.description}
-        site="Erdia"
-      />
-    ),
-    {
-      width: 1200,
-      height: 630,
-      fonts: [
-        {
-          name: 'Pretendard',
-          data: fontData,
-          style: 'normal',
-          weight: 400,
-        },
-      ],
-    },
-  );
+    return new ImageResponse(
+      (
+        <OgImage
+          title={page.data.title}
+          description={page.data.description}
+          site="Erdia"
+        />
+      ),
+      {
+        width: 1200,
+        height: 630,
+        fonts: fontData.byteLength > 0 ? [
+          {
+            name: 'Pretendard',
+            data: fontData,
+            style: 'normal',
+            weight: 400,
+          },
+        ] : [],
+      },
+    );
+  } catch (error) {
+    console.error('Failed to generate OG image:', error);
+    // Return a simple fallback image without custom fonts
+    const { slug } = await params;
+    const page = source.getPage(slug.slice(0, -1));
+    
+    return new ImageResponse(
+      (
+        <OgImage
+          title={page?.data.title || 'Erdia'}
+          description={page?.data.description}
+          site="Erdia"
+        />
+      ),
+      {
+        width: 1200,
+        height: 630,
+      },
+    );
+  }
 }
 
 export function generateStaticParams() {
