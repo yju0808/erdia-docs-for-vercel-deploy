@@ -3,16 +3,13 @@
   "pages": [
     "index",
     "getting-started",
-    "features",
-    "---가이드---",
-    "guides",
-    "---업데이트---",
-    "updates",
-    "---팁---",
-    "tips",
-    "---참고---",
-    "pricing",
-    "faq",
-    "glossary"
+    "---기능---",
+    "features/overview",
+    "features/project-management",
+    "features/diagram-editor",
+    "features/ai-assistant",
+    "features/import-export",
+    "troubleshooting",
+    "faq"
   ]
 }
