@@ -46,7 +46,42 @@ app/
 
 ---
 
-## 💻 TypeScript 코딩 스타일
+## � 패키지 매니저
+
+### Yarn 사용 필수
+
+이 프로젝트는 **Yarn**을 표준 패키지 매니저로 사용합니다.
+
+```bash
+# ✅ 올바른 사용
+yarn install
+yarn add package-name
+yarn remove package-name
+yarn build
+yarn dev
+
+# ❌ 사용 금지 (특별한 이유가 없는 한)
+npm install
+npm install package-name
+npm uninstall package-name
+npm run build
+```
+
+**Yarn을 사용하는 이유:**
+- 일관된 의존성 버전 관리 (`yarn.lock`)
+- 더 빠른 설치 속도
+- 워크스페이스 지원 (모노레포 대비)
+- 프로젝트 전체의 통일성 유지
+
+**예외 상황:**
+- 특정 라이브러리가 npm 전용 스크립트를 요구하는 경우
+- CI/CD 파이프라인의 특별한 제약이 있는 경우
+
+이러한 경우에도 팀과 논의 후 문서화하여 사용하세요.
+
+---
+
+## �💻 TypeScript 코딩 스타일
 
 ### 기본 원칙
 
