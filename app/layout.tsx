@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     default: 'Erdia 문서',
     template: '%s | Erdia 문서'
   },
-  description: 'Erdia - AI 기반 ERD 다이어그램 툴 공식 문서',
+  description: 'Erdia - AI 기반 ERD 설계 툴 공식 문서',
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
