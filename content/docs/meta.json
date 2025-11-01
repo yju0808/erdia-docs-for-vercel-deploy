@@ -9,6 +9,8 @@
     "features/diagram-editor",
     "features/ai-assistant",
     "features/import-export",
+    "pricing",
+    "limits",
     "troubleshooting",
     "faq"
   ]
