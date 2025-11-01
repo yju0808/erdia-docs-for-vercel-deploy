@@ -15,6 +15,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+          submodules: false
 
       - name: Clear git credentials
         run: |
