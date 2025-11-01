@@ -5,6 +5,15 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/node_modules', '**/external-context/**', '**/etc/**'],
+    };
+    return config;
+  },
+
   async redirects() {
     return [
       {
